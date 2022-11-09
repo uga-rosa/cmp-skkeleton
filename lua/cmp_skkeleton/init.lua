@@ -38,7 +38,7 @@ end
 ---@param callback fun(response: lsp.CompletionResponse|nil)
 function source:complete(params, callback)
     local candidates = request("getCandidates")
-    local pre_edit = request("getPreEdit")
+    local pre_edit_len = request("getPreEditLength")
     local marker = get_marker()
     local cursor = params.context.cursor
     local items = {}
@@ -46,7 +46,7 @@ function source:complete(params, callback)
     local text_edit_range = {
         start = {
             line = cursor.line,
-            character = cursor.character - vim.fn.strchars(pre_edit, true),
+            character = cursor.character - pre_edit_len,
         },
         ["end"] = {
             line = cursor.line,
