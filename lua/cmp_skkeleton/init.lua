@@ -17,7 +17,7 @@ end
 
 ---@return string
 function source:get_keyword_pattern()
-    return [[.\+]]
+    return [[.]]
 end
 
 ---@param key string
@@ -39,9 +39,21 @@ end
 function source:complete(params, callback)
     local candidates = request("getCandidates")
     local pre_edit = request("getPreEdit")
+    local marker = get_marker()
     local cursor = params.context.cursor
     local items = {}
-    local marker = get_marker()
+
+    local text_edit_range = {
+        start = {
+            line = cursor.line,
+            character = cursor.character - vim.fn.strchars(pre_edit, true),
+        },
+        ["end"] = {
+            line = cursor.line,
+            character = cursor.character,
+        },
+    }
+
     for _, cand in ipairs(candidates) do
         local kana = cand[1]
         for _, word in ipairs(cand[2]) do
@@ -49,21 +61,19 @@ function source:complete(params, callback)
             table.insert(items, {
                 label = label,
                 filterText = marker .. kana,
-                -- filterText = params.context.cursor_before_line,
                 textEdit = {
-                    range = {
-                        start = { line = cursor.line, character = cursor.col - #pre_edit - 1 },
-                        ["end"] = { line = cursor.line, character = cursor.col },
-                    },
+                    range = text_edit_range,
                     newText = label,
                 },
                 data = {
+                    skkeleton = true,
                     kana = kana,
                     word = word,
                 },
             })
         end
     end
+
     callback({ items = items, isIncomplete = true })
 end
 

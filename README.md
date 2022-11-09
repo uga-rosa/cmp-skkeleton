@@ -1,6 +1,10 @@
 # cmp-skkeleton
 
-nvim-cmpの[skkeleton](https://github.com/vim-skk/skkeleton)ソースです。
+nvim-cmpのskkeletonソースです。
+
+# Requirements
+
+- [skkeleton(cmp branch)](https://github.com/vim-skk/skkeleton/tree/cmp)
 
 # Usage
 
