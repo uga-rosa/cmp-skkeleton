@@ -16,14 +16,8 @@ function source:get_debug_name()
 end
 
 ---@return string
-local function get_marker()
-    local skkeleton_config = vim.fn["skkeleton#get_config"]()
-    return skkeleton_config.markerHenkan
-end
-
----@return string
 function source:get_keyword_pattern()
-    return get_marker() .. [[.\+]]
+    return [[.\+]]
 end
 
 ---@param key string
@@ -34,18 +28,35 @@ local function request(key, args)
     return vim.fn["denops#request"]("skkeleton", key, args)
 end
 
----@param _ cmp.SourceCompletionApiParams
+---@return string
+local function get_marker()
+    local skkeleton_config = vim.fn["skkeleton#get_config"]()
+    return skkeleton_config.markerHenkan
+end
+
+---@param params cmp.SourceCompletionApiParams
 ---@param callback fun(response: lsp.CompletionResponse|nil)
-function source:complete(_, callback)
+function source:complete(params, callback)
     local candidates = request("getCandidates")
+    local pre_edit = request("getPreEdit")
+    local cursor = params.context.cursor
     local items = {}
     local marker = get_marker()
     for _, cand in ipairs(candidates) do
         local kana = cand[1]
         for _, word in ipairs(cand[2]) do
+            local label = word:gsub(";.*$", "")
             table.insert(items, {
-                label = word:gsub(";.*$", ""),
+                label = label,
                 filterText = marker .. kana,
+                -- filterText = params.context.cursor_before_line,
+                textEdit = {
+                    range = {
+                        start = { line = cursor.line, character = cursor.col - #pre_edit - 1 },
+                        ["end"] = { line = cursor.line, character = cursor.col },
+                    },
+                    newText = label,
+                },
                 data = {
                     kana = kana,
                     word = word,
@@ -68,9 +79,10 @@ function source:resolve(completion_item, callback)
 end
 
 ---@param completion_item lsp.CompletionItem
----@param _ fun(completion_item: lsp.CompletionItem|nil)
-function source:execute(completion_item, _)
+---@param callback fun(completion_item: lsp.CompletionItem|nil)
+function source:execute(completion_item, callback)
     request("completeCallback", { completion_item.data.kana, completion_item.data.word })
+    callback(completion_item)
 end
 
 return source
