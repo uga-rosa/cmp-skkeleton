@@ -4,13 +4,16 @@ nvim-cmpのskkeletonソースです。
 
 # Requirements
 
+- [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
 - [skkeleton(cmp branch)](https://github.com/vim-skk/skkeleton/tree/cmp)
 
 # Usage
 
 設定例です。
 
-skkeletonはlmapで`<CR>`を潰してしまうのでリリースし、cmp側のマッピング設定で対応します。
+skkeleton本体が対応しているので、eggLikeNewlineを設定していれば通常の`<CR>`（`cmp.confirm({ select = true })`）は動作します。
+
+細かな制御が必要な場合は、以下の方法を使ってください。
 
 ```vim
 au User skkeleton-enable-post call s:skkeleton_post()
