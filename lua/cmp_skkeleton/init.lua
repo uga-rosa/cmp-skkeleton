@@ -28,18 +28,12 @@ local function request(key, args)
     return vim.fn["denops#request"]("skkeleton", key, args)
 end
 
----@return string
-local function get_marker()
-    local skkeleton_config = vim.fn["skkeleton#get_config"]()
-    return skkeleton_config.markerHenkan
-end
-
 ---@param params cmp.SourceCompletionApiParams
 ---@param callback fun(response: lsp.CompletionResponse|nil)
 function source:complete(params, callback)
     local candidates = request("getCandidates")
+    local pre_edit = request("getPreEdit")
     local pre_edit_len = request("getPreEditLength")
-    local marker = get_marker()
     local cursor = params.context.cursor
     local items = {}
 
@@ -60,7 +54,7 @@ function source:complete(params, callback)
             local label = word:gsub(";.*$", "")
             table.insert(items, {
                 label = label,
-                filterText = marker .. kana,
+                filterText = pre_edit,
                 textEdit = {
                     range = text_edit_range,
                     newText = label,
