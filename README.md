@@ -5,7 +5,7 @@ nvim-cmpのskkeletonソースです。
 # Requirements
 
 - [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
-- [skkeleton(cmp branch)](https://github.com/vim-skk/skkeleton/tree/cmp)
+- [skkeleton](https://github.com/vim-skk/skkeleton)
 
 # Usage
 
