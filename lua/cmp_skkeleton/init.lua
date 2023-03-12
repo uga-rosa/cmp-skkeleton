@@ -17,7 +17,9 @@ end
 
 ---@return string
 function source:get_keyword_pattern()
-  return [[.]]
+  -- U+3041-U+3094 & U+30A1-U+30F4 & U+FF66-U+FF9F
+  -- ひらがな & 全角カタカナ & 半角カタカナ
+  return [=[\V\[ぁ-ゔァ-ヴｦ-ﾟ]]=]
 end
 
 ---@param key string
