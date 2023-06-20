@@ -36,6 +36,7 @@ function source:complete(params, callback)
   local candidates = request("getCandidates")
   local pre_edit = request("getPreEdit")
   local pre_edit_len = request("getPreEditLength")
+  local ranks = request("getRanks")
   local cursor = params.context.cursor
   local items = {}
 
@@ -50,11 +51,12 @@ function source:complete(params, callback)
     },
   }
 
+  local globalRank = -1
   for _, cand in ipairs(candidates) do
     local kana = cand[1]
     for _, word in ipairs(cand[2]) do
       local label = word:gsub(";.*$", "")
-      table.insert(items, {
+      local item = {
         label = label,
         filterText = pre_edit,
         textEdit = {
@@ -66,9 +68,20 @@ function source:complete(params, callback)
           kana = kana,
           word = word,
         },
-      })
+      }
+      if ranks[word] then
+        item.data.rank = ranks[word]
+      else
+        item.data.rank = globalRank
+        globalRank = globalRank - 1
+      end
+      table.insert(items, item)
     end
   end
+
+  table.sort(items, function(a, b)
+    return a.data.rank > b.data.rank
+  end)
 
   callback({ items = items, isIncomplete = true })
 end
