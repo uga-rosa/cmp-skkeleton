@@ -5,9 +5,15 @@ function source.new()
   return setmetatable({}, source)
 end
 
+---@param fn function|nil
+---@param ... unknown args
+local function safe_call(fn, ...)
+  return fn and fn(...)
+end
+
 ---@return boolean
 function source:is_available()
-  return vim.fn["skkeleton#is_enabled"]()
+  return safe_call(vim.fn["skkeleton#is_enabled"])
 end
 
 ---@return string
