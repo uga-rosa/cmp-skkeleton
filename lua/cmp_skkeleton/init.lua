@@ -39,7 +39,7 @@ end
 ---@param params cmp.SourceCompletionApiParams
 ---@param callback fun(response: lsp.CompletionResponse|nil)
 function source:complete(params, callback)
-  local candidates = request("getCandidates")
+  local candidates = request("getCompletionResult")
   local pre_edit = request("getPreEdit")
   local pre_edit_len = request("getPreEditLength")
   local ranks = request("getRanks")
